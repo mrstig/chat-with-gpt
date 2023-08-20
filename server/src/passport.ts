@@ -61,19 +61,23 @@ export function configurePassport(context: ChatServer) {
     }));
 
     context.app.post('/chatapi/register', async (req, res, next) => {
-        const { username, password } = req.body;
-
-        const hashedPassword = await bcrypt.hash(password, 12);
-
-        try {
-            await context.database.createUser(username, Buffer.from(hashedPassword));
-
-            passport.authenticate('local')(req, res, () => {
-                res.redirect('/');
-            });
-        } catch (err) {
-            console.error(err);
+        if (config.blockRegisterUser) {
             res.redirect('/?error=register');
+        } else {
+            const { username, password } = req.body;
+
+            const hashedPassword = await bcrypt.hash(password, 12);
+
+            try {
+                await context.database.createUser(username, Buffer.from(hashedPassword));
+
+                passport.authenticate('local')(req, res, () => {
+                    res.redirect('/');
+                });
+            } catch (err) {
+                console.error(err);
+                res.redirect('/?error=register');
+            }
         }
     });
 

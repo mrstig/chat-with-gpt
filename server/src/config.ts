@@ -81,6 +81,11 @@ export interface Config {
         windowMs?: number;
         max?: number;
     };
+
+    /*
+    Block registering?
+    */
+    blockRegisterUser?: boolean;
 }
 
 // default config:
